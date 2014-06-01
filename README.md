@@ -1,7 +1,7 @@
 ## Solr index fetcher
 Retrieves the most recent / current Solr index version via the Solr HTTP API. This occurs concurrently, so that downloads do not block or slow down the process for large indeces.
 
-Reading http responses does not pipe directly to an output file, so each file may potentially be held in memory at the moment. Note that when writing to output files, this memory is not duplicated to the tune of the file size, as io.Copy writes 32MB per buffer at a time, which means at any given time you may have the overhead of any 4 Index files + 128MB, along with channel etc. overhead.
+Golang allows your OS buffers to handle the file downloads as it prefers. Whether this be in memory or buffered out to a tmp file, it's your OS decision on whether or not it keeps the entire thing in memory. Note that when writing to output files, this memory is not duplicated to the tune of the file size, as io.Copy writes 32MB per buffer at a time, which means at any given time your overhead should only be 128MB, along with channel etc. overhead, and whatever your OS adds for the file downloads.
 
 ## Implementation and Dependencies
 This script was built with Go 1.2.1, and is suitable for retrieving the latest version of a Solr instance's index.
