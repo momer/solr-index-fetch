@@ -11,7 +11,6 @@ import (
   "io/ioutil"
   "encoding/xml"
   "os"
-  "fmt"
   "flag"
   "log"
 )
@@ -125,7 +124,7 @@ func main() {
   results := make(chan DownloadResult, 1000)
   done := make(chan struct{}, workers)
 
-  fmt.Println("Beginning fetch of Solr index...")
+  log.Println("Beginning fetch of Solr index...")
   go queueIndexFileDownloads(pendingDownloads, SolrUrl, results)
   for i := 0; i < workers; i++ {
     go downloadIndexFiles(done, OutputPath, pendingDownloads)
@@ -174,8 +173,6 @@ func getLatestIndexInfo(solrUrl string) (SolrIndex, error) {
 
   for _, metadata := range indexDiscoveryResult.Header.Metadata {
     if metadata.Name == "status" && metadata.Value != "0" {
-      fmt.Printf(solrUrl)
-      fmt.Printf("%+v\n", metadata)
       log.Fatal("Error, did not discover Solr Index info as expected: ", err)
     }
   }
@@ -255,7 +252,6 @@ func getIndexFileList(solrIndex SolrIndex) ([]IndexFile, error) {
 
   for _, metadata := range fileListResult.Header.Metadata {
     if metadata.Name == "status" && metadata.Value != "0" {
-      fmt.Printf("%+v\n", metadata)
       log.Fatal("Error, did not discover Solr files as expected: ", err)
     }
   }
@@ -273,7 +269,7 @@ func getIndexFileList(solrIndex SolrIndex) ([]IndexFile, error) {
 func generateFileDiscoveryUrl(solrIndex SolrIndex) (string, error) {
   fileDiscoveryUrl, err := url.Parse(solrIndex.Url)
   if err != nil {
-    log.Println("generateFileDiscoveryUrl(): Unable to parse solrUrl.")
+    log.Fatal("generateFileDiscoveryUrl(): Unable to parse solrUrl.")
     return "", err
   }
 
@@ -359,6 +355,6 @@ func awaitCompletion(done <-chan struct{}, results chan DownloadResult) {
 
 func processResults(results <-chan DownloadResult) {
   for result := range results {
-      fmt.Printf("%+v\n", result)
+      log.Printf("%+v\n", result)
   }
 }
