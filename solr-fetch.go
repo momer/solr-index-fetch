@@ -72,9 +72,7 @@ type Download struct {
 
 var workers = runtime.NumCPU()/2
 
-var SolrUrl,
-  OutputPath,
-  SuccessFile string
+var SolrUrl, OutputPath string
 
 func (download Download) Do(outputPath string) {
   out, err := os.Create(path.Join(outputPath, download.Name))
@@ -97,11 +95,6 @@ func (download Download) Do(outputPath string) {
 }
 
 func init() {
-  defaultSuccessFile, err := filepath.Abs(filepath.Dir(os.Args[0]))
-  if err != nil {
-    log.Fatal(err)
-  }
-
   const (
     defaultSolrUrl = "http://172.20.20.20:8983/solr"
     defaultOutputPath = "/var/lib/solr/data"
@@ -109,7 +102,6 @@ func init() {
 
   flag.StringVar(&SolrUrl, "l", defaultSolrUrl, "Location of the Solr server (ie: http://localhost:8983/solr)")
   flag.StringVar(&OutputPath, "o", defaultOutputPath, "Output location of the downloaded solr index")
-  flag.StringVar(&SuccessFile, "s", defaultSuccessFile, "Path to the file which indicates that all the files downloaded successfully")
 }
 
 func main() {
